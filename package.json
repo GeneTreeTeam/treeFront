@@ -3,8 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "gojs": "^1.8.33",
     "react": "^16.6.1",
     "react-dom": "^16.6.1",
+    "react-gojs": "^1.4.0",
     "react-scripts": "2.1.1"
   },
   "scripts": {
