@@ -24,6 +24,7 @@ class MyDiagram extends React.Component {
         this.updateNodeText = this.updateNodeText.bind(this);
         this.onTextEdited = this.onTextEdited.bind(this);
         this.HandleChange = this.HandleChange.bind(this);
+        this.onUpdateText = this.onUpdateText.bind(this);
         this.HandleSubmit = this.HandleSubmit.bind(this);
         this.state = {
             LastName:'',
@@ -65,6 +66,7 @@ class MyDiagram extends React.Component {
                 onAddNode={this.addNode}
                 onHandleChange = {this.HandleChange}
                 onHandleSubmit = {this.HandleSubmit}
+                onUpdateText={this.onUpdateText}
                 //onUpdateNodeText={this.updateNodeText}
 
             />,
@@ -190,6 +192,41 @@ class MyDiagram extends React.Component {
             }
         });
     }
+    onUpdateText(e) {
+
+
+        if (this.isOneSelected()) {
+            var selectedNode = this.getSelectedNodes();
+            const txtName = this.state.FirstName + ' ' + this.state.LastName;
+
+
+
+                console.log("nodeSelected is " + selectedNode)
+                this.updateNodeText(selectedNode, txtName);
+
+        }
+    }
+            // const updatedNodes = this.state.model.nodeDataArray.map(node => {
+            //     if(this.getSelectedNodes()==node){
+            //         return {
+            //             ...node,
+            //             label: txtName
+            //         };
+            //     }
+            //     return {
+            //         ...node,
+            //         color: getRandomColor()
+            //     };
+            // });
+            // this.setState({
+            //     ...this.state,
+            //     model: {
+            //         ...this.state.model,
+            //         nodeDataArray: updatedNodes
+            //     }
+            // });
+
+
 
     createDiagram(diagramId: string) {
         const $ = go.GraphObject.make;
@@ -333,7 +370,7 @@ class MyDiagram extends React.Component {
     }
 
     updateNodeText(nodeKey, text) {
-        const nodeToUpdateIndex = this.state.model.nodeDataArray.findIndex(node => node.key === nodeKey);
+        const nodeToUpdateIndex = this.state.model.nodeDataArray.findIndex(node => node.key == nodeKey);
         if (nodeToUpdateIndex === -1) {
             return;
         }
@@ -376,14 +413,16 @@ class MyDiagram extends React.Component {
 
     }
 
-    onTextEdited(e) {
+    onTextEdited(e){
         const tb = e.subject;
         if (tb === null) {
             return;
         }
+        const txtName = this.state.FirstName +' '+ this.state.LastName;
+
         const node = tb.part;
         if (node instanceof go.Node) {
-            this.updateNodeText(node.key, tb.text);
+            this.updateNodeText(node.key, txtName);
         }
     }
 }

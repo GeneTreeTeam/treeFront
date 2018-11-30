@@ -1,7 +1,7 @@
 import React from 'react';
 import './DiagramButtons.css';
 
-const DiagramButton = ({ onInit, onUpdateColor, onAddNode, onHandleChange, onHandleSubmit }) => {
+const DiagramButton = ({ onInit, onUpdateColor, onAddNode, onHandleChange, onHandleSubmit, onUpdateText }) => {
     return (
         <div>
             <div className="centered-container">
@@ -46,6 +46,11 @@ const DiagramButton = ({ onInit, onUpdateColor, onAddNode, onHandleChange, onHan
                 <div className="inline-element">
                     <button type="button" onClick={onUpdateColor}>
                         Update node color
+                    </button>
+                </div>
+                <div className="inline-element">
+                    <button type="button" onClick={onUpdateText}>
+                        Update text
                     </button>
                 </div>
 
