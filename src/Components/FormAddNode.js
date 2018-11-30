@@ -1,15 +1,13 @@
 import React from 'react';
-import './DiagramButtons.css';
 
-const DiagramButton = ({ onInit, onUpdateColor, onAddNode, onHandleChange, onHandleSubmit }) => {
-    return (
-        <div>
+
+const FormAddNode = ({ onInit, onUpdateColor, onAddNode, onHandleChange, onHandleSubmit }) => {
+     return (
             <div className="centered-container">
-
-                <h3>Tree</h3>
+                <h3>From</h3>
                 <form onSubmit={onHandleSubmit}>
                     <div>
-                        <label>Username:</label>
+                        <lable>Username:</lable>
                         <input
                             type="text"
                             name="LastName"
@@ -17,7 +15,7 @@ const DiagramButton = ({ onInit, onUpdateColor, onAddNode, onHandleChange, onHan
                         ></input>
                     </div>
                     <div>
-                        <label>FirstName:</label>
+                        <lable>FirstName:</lable>
                         <input
                             type="text"
                             name="FirstName"
@@ -36,22 +34,10 @@ const DiagramButton = ({ onInit, onUpdateColor, onAddNode, onHandleChange, onHan
 
                 </form>
 
-            </div>
-            <div className="centered-container">
-                <div className="inline-element">
-                    <button type="button" onClick={onInit}>
-                        Init diagram
-                    </button>
-                </div>
-                <div className="inline-element">
-                    <button type="button" onClick={onUpdateColor}>
-                        Update node color
-                    </button>
-                </div>
 
             </div>
-        </div>
-    );
-};
+        );
 
-export default DiagramButton;
+}
+
+export default FormAddNode;

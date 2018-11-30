@@ -12,6 +12,7 @@ class MyDiagram extends React.Component {
 
     constructor(props) {
         super(props);
+
         this.createDiagram = this.createDiagram.bind(this);
         this.modelChangeHandler = this.modelChangeHandler.bind(this);
         this.initModelHandler = this.initModelHandler.bind(this);
@@ -22,24 +23,56 @@ class MyDiagram extends React.Component {
         this.addNode = this.addNode.bind(this);
         this.updateNodeText = this.updateNodeText.bind(this);
         this.onTextEdited = this.onTextEdited.bind(this);
+        this.HandleChange = this.HandleChange.bind(this);
+        this.HandleSubmit = this.HandleSubmit.bind(this);
         this.state = {
+            LastName:'',
+            FirstName:'',
+            Gender:'',
+            DOB:'',
+
             selectedNodeKeys: [],
             model: {
-                nodeDataArray: [{ key: 'Alpha', label: 'Alpha', color: 'lightblue' }],
+                nodeDataArray: [{ key: '0', label: 'Me', color: 'lightblue' }],
                 linkDataArray: []
             }
         };
     }
 
+    HandleChange(event) {
+        var target = event.target;
+        var name = target.name;
+        var value = target.value;
+        this.setState({
+            [name]:value
+        })
+        //this.setState({LastName: event.target.value});
+    }
+
+    HandleSubmit(event){
+        event.preventDefault();
+    }
+
+
     render() {
         return [
+
+
             <DiagramButtons
                 key="diagramButtons"
                 onInit={this.initModelHandler}
                 onUpdateColor={this.updateColorHandler}
                 onAddNode={this.addNode}
+                onHandleChange = {this.HandleChange}
+                onHandleSubmit = {this.HandleSubmit}
+                //onUpdateNodeText={this.updateNodeText}
+
             />,
-            <SelectionDetails key="selectionDetails" selectedNodes={this.state.selectedNodeKeys} />,
+
+            <SelectionDetails key="selectionDetails" selectedNodes={this.state.selectedNodeKeys}  />,
+
+
+
             <GojsDiagram
                 key="gojsDiagram"
                 diagramId="myDiagramDiv"
@@ -48,7 +81,18 @@ class MyDiagram extends React.Component {
                 className="myDiagram"
                 onModelChange={this.modelChangeHandler}
             />
+
+
         ];
+    }
+
+    getLargestNodeId(){
+        var number = 0;
+        var i;
+        for (i = 0; i < this.state.model.nodeDataArray.length; i++) {
+            number = i;
+        }
+        return number;
     }
 
     initModelHandler() {
@@ -56,20 +100,78 @@ class MyDiagram extends React.Component {
             ...this.state,
             model: {
                 nodeDataArray: [
-                    { key: 'Alpha', label: 'Alpha', color: 'lightblue' },
-                    { key: 'Beta', label: 'Beta', color: 'orange' },
-                    { key: 'Gamma', label: 'Gamma', color: 'lightgreen' },
-                    { key: 'Delta', label: 'Delta', color: 'pink' },
-                    { key: 'Omega', label: 'Omega', color: 'grey' }
+                    { key: '0', label: 'Me', color: 'lightblue' },
+                    { key: '1', label: 'Mother', color: 'orange' },
+                    { key: '2', label: 'Father', color: 'orange' },
+                    { key: '3', label: 'Grandmother', color: 'lightgreen' },
+                    { key: '4', label: 'Grandfather', color: 'lightgreen' },
+                    { key: '5', label: 'Grandmother', color: 'lightgreen' },
+                    { key: '6', label: 'Grandfather', color: 'lightgreen' },
+
                 ],
                 linkDataArray: [
-                    { from: 'Alpha', to: 'Beta' },
-                    { from: 'Alpha', to: 'Gamma' },
-                    { from: 'Beta', to: 'Delta' },
-                    { from: 'Gamma', to: 'Omega' }
+                    { from: '0', to: '1' },
+                    { from: '0', to: '2' },
+                    { from: '1', to: '3' },
+                    { from: '1', to: '4' },
+                    { from: '2', to: '5'},
+                    { from: '2', to: '6'},
+
+
                 ]
             }
         });
+    }
+    getSelectedNodes(){
+        var selectedNodes = this.state.selectedNodeKeys;
+        var message ;//selectedNodes.reduce((result, current) => result + ' ' + current, '');
+        var i ;
+        for(i=0;i<selectedNodes.length;i++)
+        {
+            message = message + " "+selectedNodes[i];
+        }
+        console.log(message);
+        return selectedNodes;
+    }
+    isOneSelected(){
+        var selectedNodes = this.state.selectedNodeKeys;
+        if(selectedNodes.length===1)
+        {
+            return true;
+        }
+        else
+            return false;
+    }
+
+
+    getNumberParents(selectednodeId){
+        var links = this.state.model.linkDataArray;
+        var i;
+        var numLinks=0;
+        var selectedNode = this.getNodewithId(selectednodeId);
+        if(selectedNode !== -1)
+        {
+
+            for (i = 0; i < links.length; i++) {
+                if(parseInt(links[i]['from'])==selectednodeId){
+                    numLinks++;
+                }
+            }
+        }
+        console.log("selectedNodeId: "+ selectednodeId+ " has numLinks: " + numLinks);
+        return numLinks;
+    }
+    getNodewithId(givenNodeId){
+        var i;
+        for (i = 0; i <= this.state.model.nodeDataArray.length; i++) {
+            if(i == givenNodeId)
+            {
+                console.log("givenNodeId: "+givenNodeId+ " node found")
+                return this.state.model.nodeDataArray[i];
+            }
+        }
+        console.log("givenNodeId: "+givenNodeId+ " node not found")
+        return -1;
     }
 
     updateColorHandler() {
@@ -91,7 +193,6 @@ class MyDiagram extends React.Component {
 
     createDiagram(diagramId: string) {
         const $ = go.GraphObject.make;
-
         const myDiagram = $(go.Diagram, diagramId, {
             initialContentAlignment: go.Spot.LeftCenter,
             layout: $(go.TreeLayout, {
@@ -112,15 +213,32 @@ class MyDiagram extends React.Component {
         myDiagram.toolManager.panningTool.isEnabled = false;
         myDiagram.toolManager.mouseWheelBehavior = ToolManager.WheelScroll;
 
+        // myDiagram.nodeTemplate =
+        //     $(go.Node, "Auto",
+        //         new go.Binding("location", "loc", go.Point.parse),
+        //         {
+        //                      selectionChanged: node => this.nodeSelectionHandler(node.key, node.isSelected)
+        //               },
+        //         $(go.Shape, "Ellipse",
+        //             { fill: 'green', portId: "", cursor: "pointer",
+        //                 },  // at most TWO links can come into this node
+        //             new go.Binding("fromLinkable", "from"),
+        //             new go.Binding("toLinkable", "to")),
+        //         $(go.TextBlock, { margin: 8, editable: false }, new go.Binding('text', 'label'))
+        //     );
         myDiagram.nodeTemplate = $(
             go.Node,
             'Auto',
             {
                 selectionChanged: node => this.nodeSelectionHandler(node.key, node.isSelected)
             },
-            $(go.Shape, 'RoundedRectangle', { strokeWidth: 0 }, new go.Binding('fill', 'color')),
+            $(go.Shape, 'RoundedRectangle',
+                { strokeWidth: 0 ,
+                  toMaxLinks: 2 ,
+                    fromMaxLinks:2}, new go.Binding('fill', 'color')),
             $(go.TextBlock, { margin: 8, editable: true }, new go.Binding('text', 'label'))
         );
+        myDiagram.layout = $(go.TreeLayout, {angle: 270, nodeSpacing: 10, layerSpacing: 40, layerStyle: go.TreeLayout.LayerUniform });
 
         return myDiagram;
     }
@@ -140,26 +258,42 @@ class MyDiagram extends React.Component {
         }
     }
 
+
     addNode() {
-        const newNodeId = 'node' + this.nodeId;
-        const linksToAdd = this.state.selectedNodeKeys.map(parent => {
-            return { from: parent, to: newNodeId };
-        });
-        this.setState({
-            ...this.state,
-            model: {
-                ...this.state.model,
-                nodeDataArray: [
-                    ...this.state.model.nodeDataArray,
-                    { key: newNodeId, label: newNodeId, color: getRandomColor() }
-                ],
-                linkDataArray:
-                    linksToAdd.length > 0
-                        ? [...this.state.model.linkDataArray].concat(linksToAdd)
-                        : [...this.state.model.linkDataArray]
-            }
-        });
-        this.nodeId += 1;
+        if(this.isOneSelected())
+        {
+         console.log("selected nodes in add node is "+this.getSelectedNodes().toString());
+         const numParents = this.getNumberParents(this.getSelectedNodes().toString());
+         console.log("number of parents: "+numParents);
+         if(numParents<2)
+         {
+             const newNodeId = this.getLargestNodeId()+1;
+             const linksToAdd = this.state.selectedNodeKeys.map(parent => {
+                 return { from: parent, to: newNodeId };
+             });
+             const txtName = this.state.FirstName +' '+ this.state.LastName;
+             this.setState({
+                 ...this.state,
+                 model: {
+                     ...this.state.model,
+                     nodeDataArray: [
+                         ...this.state.model.nodeDataArray,
+                         //{ key: newNodeId, label: newNodeId, color: getRandomColor() }
+                         { key: newNodeId, label: txtName, color: getRandomColor() }
+                     ],
+                     linkDataArray:
+                         linksToAdd.length > 0
+                             ? [...this.state.model.linkDataArray].concat(linksToAdd)
+                             : [...this.state.model.linkDataArray]
+                 }
+             });
+             this.nodeId += 1;
+
+         }
+        }
+
+
+
     }
 
     removeNode(nodeKey) {
@@ -238,6 +372,8 @@ class MyDiagram extends React.Component {
                 ]
             });
         }
+        this.getNumberParents(this.getSelectedNodes());
+
     }
 
     onTextEdited(e) {
